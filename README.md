@@ -10,7 +10,7 @@ the project documentation.
 
 | Front | Right | Top |
 |:---:|:---:|:---:|
-| ![Front view](images/front.jpg) | ![Right view](images/right.jpg) | ![Top view](images/top.jpg) |
+| ![Front view](images/front.png) | ![Right view](images/right.png) | ![Top view](images/top.png) |
 
 ## Contents
 
@@ -33,5 +33,5 @@ SolidWorks, model-viewer (web 3D), GitHub Pages
 
 ## Author
 
-Bala Jee Soni
+Bala Jee Soni, 
 Founder, Solarpunk Corps, Robotics & Sustainability Club, BIET Jhansi
