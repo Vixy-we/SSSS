@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Robotic Arm</title>
+  <meta name="description" content="4-link robotic arm designed in SolidWorks. Interactive 3D viewer, documentation and CAD files.">
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --card: #121922;
+      --border: #1f2a37;
+      --text: #e6edf3;
+      --muted: #8b98a7;
+      --accent: #3ddc97;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 20px 64px;
+    }
+
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(32px, 6vw, 52px);
+      line-height: 1.1;
+      margin: 12px 0 16px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin: 48px 0 6px;
+    }
+
+    .intro {
+      color: var(--muted);
+      max-width: 620px;
+      font-size: 17px;
+      margin-bottom: 36px;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    .viewer-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    model-viewer {
+      width: 100%;
+      background: radial-gradient(circle at 50% 40%, #1c2735 0%, #0b0f14 80%);
+      --poster-color: transparent;
+    }
+
+    .main model-viewer { height: 560px; }
+    .small model-viewer { height: 260px; }
+
+    .label {
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .label b { font-weight: 500; }
+
+    .label span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hint {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      font-size: 12px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    .buttons {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: transform 0.15s, background 0.15s;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn.primary { background: var(--accent); color: #06130d; }
+    .btn.ghost { border: 1px solid var(--border); color: var(--text); }
+    .btn.ghost:hover { background: var(--card); }
+
+    footer {
+      margin-top: 56px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .main model-viewer { height: 380px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="tag">Mechanical Design / SolidWorks</div>
+    <h1>Robotic Arm</h1>
+    <p class="intro">
+      Write two lines here about your robotic arm: what it does,
+      how many links it has, and what you learned while designing it.
+    </p>
+
+    <!-- MAIN ASSEMBLY -->
+    <div class="viewer-card main" id="main-slot"></div>
+
+    <div class="buttons">
+      <a class="btn primary" href="Robotic-Arm-Documentation.pdf" target="_blank">Full Documentation (PDF)</a>
+      <a class="btn ghost" href="downloads/solidworks-files.zip" download>SolidWorks Files (ZIP)</a>
+    </div>
+
+    <!-- INDIVIDUAL PARTS -->
+    <h2>Individual Parts</h2>
+    <p class="sub">Drag any part to rotate it. It turns slowly on its own after 2 seconds.</p>
+    <div class="grid" id="parts-grid"></div>
+
+    <footer>Made by Yugesh &bull; BIET Jhansi</footer>
+
+  </div>
+
+  <script>
+  // Defaults, used by any model that doesn't set its own values
+  const DEFAULT_ORIENTATION = "0deg 90deg 90deg";
+  const DEFAULT_COLOR = [0.35, 0.6, 0.9, 1];   // red, green, blue, alpha (0 to 1)
+  const DEFAULT_METALLIC = 0.8;                // 0 = plastic, 1 = full metal
+  const DEFAULT_ROUGHNESS = 0.35;              // 0 = mirror, 1 = matte
+
+  // Each model can set its own orientation, color, metallic and roughness.
+  // Delete a line to make that model use the default.
+  const assembly = {
+    name: "Full Assembly", file: "models/assembly.glb", tag: "Assembly",
+    orientation: "0deg 0deg 0deg",
+    color: [0.55, 0.7, 0.8, 1]
+  };
+
+  const parts = [
+    { name: "Base", file: "models/base.glb", tag: "Part 1",
+      orientation: "0deg 90deg 90deg",
+      color: [0.3, 0.3, 0.33, 1] },            // dark grey
+
+    { name: "Link 1", file: "models/link1.glb", tag: "Part 2",
+      orientation: "0deg 90deg 90deg",
+      color: [1.0, 0.45, 0.1, 1] },            // orange
+
+    { name: "Link 2", file: "models/link2.glb", tag: "Part 3",
+      orientation: "0deg 90deg 90deg",
+      color: [0.24, 0.86, 0.59, 1] },          // green
+
+    { name: "Link 3", file: "models/link3.glb", tag: "Part 4",
+      orientation: "0deg 90deg 0deg",
+      color: [0.85, 0.15, 0.15, 1] },          // red
+
+    { name: "Link 4", file: "models/link4.glb", tag: "Part 5",
+      orientation: "0deg 90deg 180deg",
+      color: [0.35, 0.6, 0.9, 1],              // steel blue
+      metallic: 0.9, roughness: 0.25 }         // extra shiny
+  ];
+
+  function makeViewer(item, lazy) {
+    const mv = document.createElement("model-viewer");
+    mv.setAttribute("src", item.file);
+    mv.setAttribute("alt", "3D model of " + item.name);
+    mv.setAttribute("orientation", item.orientation || DEFAULT_ORIENTATION);
+    mv.setAttribute("camera-controls", "");
+    mv.setAttribute("auto-rotate", "");
+    mv.setAttribute("auto-rotate-delay", "2000");
+    mv.setAttribute("rotation-per-second", "10deg");
+    mv.setAttribute("environment-image", "neutral");
+    mv.setAttribute("shadow-intensity", "1.2");
+    mv.setAttribute("shadow-softness", "0.6");
+    mv.setAttribute("exposure", "1");
+    mv.setAttribute("interaction-prompt", "none");
+    if (lazy) mv.setAttribute("loading", "lazy");
+
+    mv.addEventListener("load", () => {
+      mv.model.materials.forEach(mat => {
+        const p = mat.pbrMetallicRoughness;
+        p.setBaseColorFactor(item.color || DEFAULT_COLOR);
+        p.setMetallicFactor(item.metallic ?? DEFAULT_METALLIC);
+        p.setRoughnessFactor(item.roughness ?? DEFAULT_ROUGHNESS);
+      });
+    });
+    return mv;
+  }
+
+  function makeLabel(item) {
+    const d = document.createElement("div");
+    d.className = "label";
+    d.innerHTML = "<b>" + item.name + "</b><span>" + item.tag + "</span>";
+    return d;
+  }
+
+  // Main assembly (big)
+  const mainSlot = document.getElementById("main-slot");
+  mainSlot.appendChild(makeViewer(assembly, false));
+  const hint = document.createElement("div");
+  hint.className = "hint";
+  hint.innerHTML = "Drag to rotate &bull; Scroll to zoom";
+  mainSlot.appendChild(hint);
+  mainSlot.appendChild(makeLabel(assembly));
+
+  // Smaller parts
+  const grid = document.getElementById("parts-grid");
+  parts.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "viewer-card small";
+    card.appendChild(makeViewer(item, true));
+    card.appendChild(makeLabel(item));
+    grid.appendChild(card);
+  });
+</script>
+
+</body>
+</html>
