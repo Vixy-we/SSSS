@@ -1,6 +1,6 @@
 # Robotic Arm
 
-A 5-DOF robotic arm designed in SolidWorks, with a base, four links and
+A 4-DOF robotic arm designed in SolidWorks, with a base, four links and
 an end effector. This repository holds the CAD data, web 3D models and
 the project documentation.
 
