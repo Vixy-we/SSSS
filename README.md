@@ -3,7 +3,7 @@
 A 4-link robotic arm designed in SolidWorks. This repository holds the
 CAD data, web 3D models, and the project documentation.
 
-**Live page:** https://YOUR-USERNAME.github.io/robotic-arm/
+**Live page:** https://vixy-we.github.io/SSSS/
 
 ## Contents
 
