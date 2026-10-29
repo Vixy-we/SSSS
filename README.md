@@ -10,7 +10,7 @@ the project documentation.
 
 | Front | Right | Top |
 |:---:|:---:|:---:|
-| ![Front view](images/front.png) | ![Right view](images/right.png) | ![Top view](images/top.png) |
+| ![Front view](images/front.webp) | ![Right view](images/right.webp) | ![Top view](images/top.webp) |
 
 ## Contents
 
